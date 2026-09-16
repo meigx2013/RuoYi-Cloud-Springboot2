@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ai.mapper.PromptManagementMapper">
+    
+    <resultMap type="PromptManagement" id="PromptManagementResult">
+        <result property="id"    column="id"    />
+        <result property="promptName"    column="prompt_name"    />
+        <result property="promptContent"    column="prompt_content"    />
+        <result property="promptCategory"    column="prompt_category"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectPromptManagementVo">
+        select id, prompt_name, prompt_content, prompt_category, status, create_time, update_time, create_by, update_by, remark from t_prompt_management
+    </sql>
+
+    <select id="selectPromptManagementList" parameterType="PromptManagement" resultMap="PromptManagementResult">
+        <include refid="selectPromptManagementVo"/>
+        <where>  
+            <if test="promptName != null  and promptName != ''"> and prompt_name like concat('%', #{promptName}, '%')</if>
+            <if test="promptCategory != null  and promptCategory != ''"> and prompt_category = #{promptCategory}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectPromptManagementById" parameterType="Long" resultMap="PromptManagementResult">
+        <include refid="selectPromptManagementVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPromptManagement" parameterType="PromptManagement" useGeneratedKeys="true" keyProperty="id">
+        insert into t_prompt_management
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="promptName != null and promptName != ''">prompt_name,</if>
+            <if test="promptContent != null and promptContent != ''">prompt_content,</if>
+            <if test="promptCategory != null and promptCategory != ''">prompt_category,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="promptName != null and promptName != ''">#{promptName},</if>
+            <if test="promptContent != null and promptContent != ''">#{promptContent},</if>
+            <if test="promptCategory != null and promptCategory != ''">#{promptCategory},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePromptManagement" parameterType="PromptManagement">
+        update t_prompt_management
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="promptName != null and promptName != ''">prompt_name = #{promptName},</if>
+            <if test="promptContent != null and promptContent != ''">prompt_content = #{promptContent},</if>
+            <if test="promptCategory != null and promptCategory != ''">prompt_category = #{promptCategory},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePromptManagementById" parameterType="Long">
+        delete from t_prompt_management where id = #{id}
+    </delete>
+
+    <delete id="deletePromptManagementByIds" parameterType="String">
+        delete from t_prompt_management where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

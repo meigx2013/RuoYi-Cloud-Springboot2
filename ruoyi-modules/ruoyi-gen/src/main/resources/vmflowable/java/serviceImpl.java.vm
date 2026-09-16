@@ -1,0 +1,290 @@
+package ${packageName}.service.impl;
+
+import java.util.List;
+#foreach ($column in $columns)
+#if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
+import com.ruoyi.common.core.utils.DateUtils;
+#break
+#end
+#end
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ${packageName}.mapper.${ClassName}Mapper;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.service.I${ClassName}Service;
+import cn.hutool.core.bean.BeanUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.common.core.constant.SecurityConstants;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.web.page.TableDataInfo;
+import com.ruoyi.system.api.RemoteFlowableService;
+import com.ruoyi.system.api.vo.FlowTaskVo;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import com.ruoyi.common.core.web.page.PageDomain;
+import com.ruoyi.common.core.web.page.TableSupport;
+import com.ruoyi.common.core.utils.StringUtils;
+import java.util.ArrayList;
+/**
+ * ${functionName}Service业务层处理
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Service
+public class ${ClassName}ServiceImpl implements I${ClassName}Service 
+{
+    @Autowired
+    private ${ClassName}Mapper ${className}Mapper;
+    @Autowired
+    private RemoteFlowableService remoteFlowableService;
+    private String process_key="${processKey}";
+
+    /**
+     * 查询${functionName}
+     * 
+     * @param ${pkColumn.javaField} ${functionName}主键
+     * @return ${functionName}
+     */
+    @Override
+    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
+    {
+        return ${className}Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+    }
+
+    /**
+     * 查询${functionName}列表
+     * 
+     * @param ${className} ${functionName}
+     * @return ${functionName}
+     */
+    @Override
+    public List<${ClassName}> select${ClassName}List(${ClassName} ${className})
+    {
+        try {
+            if (StringUtils.isNotNull(${className}.getParams())&&${className}.getParams().get("processTab")!=null&&!"all".equals(${className}.getParams().get("processTab"))){
+                FlowTaskVo flowTaskVo=new FlowTaskVo();
+                flowTaskVo.setType((String) ${className}.getParams().get("processTab"));
+                flowTaskVo.setProcessKey(process_key);
+                PageDomain pageDomain = TableSupport.buildPageRequest();
+                Integer pageNum = pageDomain.getPageNum();
+                Integer pageSize = pageDomain.getPageSize();
+                flowTaskVo.setPageNum(pageNum);
+                flowTaskVo.setPageSize(pageSize);
+                Map<String, Object> resultMap = BeanUtil.beanToMap(${className});
+                flowTaskVo.setQueryMap(resultMap);
+                R<TableDataInfo> result= remoteFlowableService.commonProcessList(flowTaskVo, SecurityConstants.INNER);
+                List<${ClassName}> ${className}List = new ArrayList<>();
+                if (result != null && result.getData() != null) {
+                    List<Object> list = (List<Object>) result.getData().getRows();
+                    for (Object obj : list) {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        // 将对象转换为 JSON 字符串
+                        String jsonString = null;
+                        jsonString = objectMapper.writeValueAsString(obj);
+                        // 将 JSON 字符串解析为 Map
+                        Map<String, Object> jsonMap = objectMapper.readValue(jsonString, Map.class);
+                        // 获取 processVariables
+                        Map<String, Object> processVariables = (Map<String, Object>) jsonMap.get("processVariables");
+                        // 创建 TestProcess 对象并设置值
+                        ${ClassName} ${className}Item = new  ${ClassName}();
+                        BeanUtil.fillBeanWithMap(processVariables, ${className}Item, false);
+                        // 根据实际情况继续设置其他字段
+                        ${className}Item.set${ProcessStatusField}((String) jsonMap.get("processStatus"));
+                        ${className}Item.setProcessDefinitionId((String) jsonMap.get("procInsId"));
+                        ${className}Item.setTaskId((String) jsonMap.get("taskId"));
+                            ${className}List.add(${className}Item);
+                    }
+                    return ${className}List;
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return ${className}Mapper.select${ClassName}List(${className});
+    }
+
+    /**
+     * 新增${functionName}
+     * 
+     * @param ${className} ${functionName}
+     * @return 结果
+     */
+#if($table.sub)
+    @Transactional
+#end
+    @Override
+    public int insert${ClassName}(${ClassName} ${className})
+    {
+#foreach ($column in $columns)
+#if($column.javaField == 'createTime')
+        ${className}.setCreateTime(DateUtils.getNowDate());
+#end
+#end
+#if($table.sub)
+        int rows = ${className}Mapper.insert${ClassName}(${className});
+        insert${subClassName}(${className});
+        return rows;
+#else
+        return ${className}Mapper.insert${ClassName}(${className});
+#end
+    }
+
+    /**
+     * 修改${functionName}
+     * 
+     * @param ${className} ${functionName}
+     * @return 结果
+     */
+#if($table.sub)
+    @Transactional
+#end
+    @Override
+    public int update${ClassName}(${ClassName} ${className})
+    {
+#foreach ($column in $columns)
+#if($column.javaField == 'updateTime')
+        ${className}.setUpdateTime(DateUtils.getNowDate());
+#end
+#end
+#if($table.sub)
+        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}());
+        insert${subClassName}(${className});
+#end
+        return ${className}Mapper.update${ClassName}(${className});
+    }
+
+    /**
+     * 批量删除${functionName}
+     * 
+     * @param ${pkColumn.javaField}s 需要删除的${functionName}主键
+     * @return 结果
+     */
+#if($table.sub)
+    @Transactional
+#end
+    @Override
+    public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
+    {
+#if($table.sub)
+        ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
+#end
+
+        //对应流程先删除
+        for (Long id:ids){
+            ${ClassName} ${className}=${className}Mapper.select${ClassName}ById(id);
+            if(${className}!=null&&StringUtils.isNotNull(${className}.getProcessDefinitionId())){
+                remoteFlowableService.delProcess(${className}.getProcessDefinitionId(), SecurityConstants.INNER);
+            }
+        }
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
+    }
+
+    /**
+     * 删除${functionName}信息
+     * 
+     * @param ${pkColumn.javaField} ${functionName}主键
+     * @return 结果
+     */
+#if($table.sub)
+    @Transactional
+#end
+    @Override
+    public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
+    {
+#if($table.sub)
+        ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
+#end
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+    }
+#if($table.sub)
+
+    /**
+     * 新增${subTable.functionName}信息
+     * 
+     * @param ${className} ${functionName}对象
+     */
+    public void insert${subClassName}(${ClassName} ${className})
+    {
+        List<${subClassName}> ${subclassName}List = ${className}.get${subClassName}List();
+        ${pkColumn.javaType} ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
+        if (StringUtils.isNotNull(${subclassName}List))
+        {
+            List<${subClassName}> list = new ArrayList<${subClassName}>();
+            for (${subClassName} ${subclassName} : ${subclassName}List)
+            {
+                ${subclassName}.set${subTableFkClassName}(${pkColumn.javaField});
+                list.add(${subclassName});
+            }
+            if (list.size() > 0)
+            {
+                ${className}Mapper.batch${subClassName}(list);
+            }
+        }
+    }
+#end
+
+
+
+    /**
+    * 启动流程
+    *
+    */
+    @Override
+    public int startProcess(${ClassName} ${className})
+    {
+        try {
+            Map<String, Object> resultMap = BeanUtil.beanToMap(${className});
+            resultMap.put("processKey",process_key);
+            resultMap.put("processState","running");
+            R<String> processInstanceId= remoteFlowableService.startProcessByKey(resultMap, SecurityConstants.INNER);
+            if(processInstanceId!=null&&processInstanceId.getData()!=null){
+                ${className}.setProcessDefinitionId(processInstanceId.getData());
+                ${className}.setProcessState("running");
+                return ${className}Mapper.update${ClassName}(${className});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    /**
+     * 停止流程
+     *
+     */
+    @Override
+    public int stopProcess(${ClassName} ${className})
+    {
+        try {
+            R<String> processInstanceId= remoteFlowableService.stopProcess(${className}.getProcessDefinitionId(), SecurityConstants.INNER);
+            if(processInstanceId!=null&&processInstanceId.getData()!=null){
+                ${className}.setProcessDefinitionId(processInstanceId.getData());
+                ${className}.setProcessState("canceled");
+                return ${className}Mapper.update${ClassName}(${className});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    /**
+     * 撤回流程
+     *
+     */
+    @Override
+    public String revokeProcess(${ClassName} ${className})
+    {
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("procInsId",${className}.getProcessDefinitionId());
+        resultMap.put("taskId",${className}.getTaskId());
+        R<String> revokeProcess=remoteFlowableService.revokeProcess(resultMap, SecurityConstants.INNER);
+        if (revokeProcess.getCode()==500){
+            return revokeProcess.getMsg();
+        }
+        return "撤回成功";
+    }
+}
