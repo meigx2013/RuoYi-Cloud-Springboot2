@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "activeWorkspaceId": "43",
+  "toolsetIds": [
+    "context-builder",
+    "context-builder0921",
+    "context-builder-d",
+    "context-builder-7",
+    "context-builder-8"
+  ],
+  "specIds": [],
+  "contextIds": [],
+  "skillIds": [],
+  "toolsetModes": {
+    "context-builder": "local",
+    "context-builder0921": "local",
+    "context-builder-d": "local",
+    "context-builder-7": "local",
+    "context-builder-8": "local"
+  },
+  "specModes": {},
+  "toolsetVersions": {
+    "context-builder-8": "2.8.0"
+  },
+  "specVersions": {},
+  "skillVersions": {},
+  "mcpVersions": {},
+  "workspaces": {
+    "14": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "asdm-code-reviewer"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-02T06:08:09.129Z"
+    },
+    "15": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "asdm-code-reviewer"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-10-16T05:46:58.381Z"
+    },
+    "16": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "context-builder-8"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [
+        "algorithmic-art2"
+      ],
+      "updatedAt": "2026-10-28T05:59:21.680Z"
+    },
+    "18": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "asdm-code-reviewer"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-03T01:57:27.484Z"
+    },
+    "39": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "asdm-code-reviewer"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-17T01:31:46.678Z"
+    },
+    "40": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "basic-tools_224e9c7d"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-16T05:56:34.551Z"
+    },
+    "42": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "asdm-code-reviewer"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-18T05:37:18.761Z"
+    },
+    "43": {
+      "registryVersion": "snapshot-1.0.0",
+      "toolsetIds": [
+        "context-builder-8"
+      ],
+      "specIds": [],
+      "contextIds": [],
+      "skillIds": [],
+      "updatedAt": "2026-11-18T05:49:17.848Z"
+    }
+  }
+}

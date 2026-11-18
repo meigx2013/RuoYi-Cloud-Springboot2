@@ -1,0 +1,15 @@
+{
+  "storage": {
+    "kind": "sqlite"
+  },
+  "backend": {
+    "kind": "local"
+  },
+  "serve": {
+    "port": 3011
+  },
+  "defaults": {
+    "tenant": "default",
+    "domain": "softwareEng"
+  }
+}
